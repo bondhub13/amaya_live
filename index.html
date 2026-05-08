@@ -5,26 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMAYA AI - Active</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .container { width: 100%; max-width: 600px; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h1 { color: #38bdf8; text-align: center; }
-        #stats { display: flex; justify-content: space-between; margin-bottom: 15px; background: #334155; padding: 10px; border-radius: 8px; font-weight: bold; }
-        #chat-box { height: 300px; overflow-y: auto; background: #0f172a; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #334155; }
-        .user-msg { color: #facc15; margin-bottom: 10px; text-align: right; }
-        .ai-msg { color: #38bdf8; margin-bottom: 10px; text-align: left; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .container { width: 100%; max-width: 600px; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        h1 { color: #38bdf8; text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
+        #stats { display: flex; justify-content: space-between; margin-bottom: 15px; background: #334155; padding: 12px; border-radius: 8px; font-weight: bold; border: 1px solid #475569; }
+        #chat-box { height: 350px; overflow-y: auto; background: #0f172a; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #334155; display: flex; flex-direction: column; gap: 10px; }
+        .user-msg { color: #facc15; align-self: flex-end; background: #334155; padding: 8px 12px; border-radius: 12px 12px 0 12px; max-width: 80%; }
+        .ai-msg { color: #38bdf8; align-self: flex-start; background: #1e293b; padding: 8px 12px; border-radius: 12px 12px 12px 0; border: 1px solid #334155; max-width: 80%; }
         .input-area { display: flex; gap: 10px; }
-        input { flex: 1; padding: 12px; border-radius: 8px; border: none; outline: none; background: #334155; color: white; }
-        button { padding: 10px 20px; background: #0ea5e9; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; }
-        button:hover { background: #0284c7; }
-        #progress-bar { width: 100%; height: 8px; background: #334155; border-radius: 4px; margin-top: 5px; }
-        #progress-fill { height: 100%; width: 0%; background: #38bdf8; border-radius: 4px; transition: 0.5s; }
+        input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
+        button { padding: 10px 20px; background: #0ea5e9; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #0284c7; transform: translateY(-2px); }
+        #progress-bar { width: 100%; height: 10px; background: #0f172a; border-radius: 5px; margin-top: 5px; overflow: hidden; border: 1px solid #334155; }
+        #progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); transition: 0.5s; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>AMAYA AI</h1>
-    
     <div id="stats">
         <span>XP: <span id="xp-val">0</span></span>
         <div style="width: 70%;">
@@ -32,11 +31,9 @@
             <div id="progress-bar"><div id="progress-fill"></div></div>
         </div>
     </div>
-
-    <div id="chat-box" id="chat">
-        <div class="ai-msg">System: AMAYA Secure Connection Established.</div>
+    <div id="chat-box">
+        <div class="ai-msg">System: AMAYA Secure Connection Established. Ready for command.</div>
     </div>
-
     <div class="input-area">
         <input type="text" id="userInput" placeholder="Ask AMAYA anything...">
         <button onclick="sendMessage()">Send</button>
@@ -44,6 +41,7 @@
 </div>
 
 <script>
+    // താഴെ നിങ്ങളുടെ പുതിയ ഗൂഗിൾ ഡെപ്ലോയ്മെന്റ് ലിങ്ക് നൽകുക
     const bridge = "https://script.google.com/macros/s/AKfycbzqei2251WMzu48epO6Wd3ALW-YypY6gfhPwGfKfBLUd2140RxF4czErZmaJA8dtdim/exec";
     let xp = 0;
 
@@ -51,34 +49,25 @@
         const input = document.getElementById('userInput');
         const chatBox = document.getElementById('chat-box');
         const userText = input.value.trim();
-
         if (userText === "") return;
 
-        // Display User Message
         chatBox.innerHTML += `<div class="user-msg">${userText}</div>`;
         input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-        // JSONP Implementation to bypass CORS
         const script = document.createElement('script');
         script.src = `${bridge}?q=${encodeURIComponent(userText)}&callback=handleResponse`;
         document.body.appendChild(script);
-        
-        chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function handleResponse(data) {
         const chatBox = document.getElementById('chat-box');
         chatBox.innerHTML += `<div class="ai-msg">${data.reply}</div>`;
-        
-        // Update XP & Progress
         xp += 10;
         document.getElementById('xp-val').innerText = xp;
-        let progress = (xp % 100);
-        document.getElementById('progress-fill').style.width = progress + "%";
-        
+        document.getElementById('progress-fill').style.width = (xp % 100) + "%";
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 </script>
-
 </body>
 </html>
